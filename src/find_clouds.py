@@ -194,7 +194,7 @@ def classify_main(test_data_dir, train_data_dir, image):
     print "...Classifying"
     eps = 1.
     features = [(HSI[:,:,2]+eps)/(HSI[:,:,0]+eps), HSI[:,:,1], HSI[:,:,2]]
-    trained_data = "trained_class_ihsi"
+    trained_data = "trained_class_hsi"
     cloud_mask_hsi = classify(features, train_data_dir, trained_data, pc, pnc)
     #scipy.io.savemat("class_res", {"class_res": cloud_mask}, do_compression=True)
 
