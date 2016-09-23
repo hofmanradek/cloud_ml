@@ -34,6 +34,7 @@ def HSI_matrix(image_path):
 
     #reads GBR image
     img = cv2.imread(image_path, 1)
+
     nx, ny = img.shape[:2]
     RGB = numpy.zeros(img.shape, dtype="uint8")
     HSI = numpy.zeros(img.shape, dtype="uint8")
