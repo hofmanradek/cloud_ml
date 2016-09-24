@@ -18,13 +18,17 @@ class TrainClassifier(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, data_dir, filenames):
+    def __init__(self, class_type, data_dir, filenames):
+        self.class_type = class_type
         self.data_dir = data_dir
         self.filenames = filenames
         self.train()
 
     @abc.abstractmethod
     def extract_features(self):
+        """
+        extraction of feature vectors from files - this is specific for each classifier
+        """
         pass
 
     def train(self):
@@ -37,7 +41,7 @@ class TrainClassifier(object):
             #remove file extension
             fname = ''.join(filename.split('.')[:-1])
             #load ground truth - provided annotations
-            gt = cv2.imread(os.path.join(data_dir, fname+'_mask.png'), 0)
+            gt = cv2.imread(os.path.join(self.data_dir, fname+'_mask.png'), 0)
 
             self.extract_features(filename)
 
@@ -66,14 +70,16 @@ class TrainClassifier(object):
 
         self.print_stats(cloud_m, cloud_cov, nocloud_m, nocloud_cov)
 
-        output_path = os.path.join(data_dir, 'trained_class_%s.mat' % self.class_type)
+        output_path = os.path.join(self.data_dir, 'trained_class_%s.mat' % self.class_type)
         logging.info("Saving output to %s" % output_path)
         scipy.io.savemat(output_path, {'cloud_m': cloud_m, 'cloud_cov': cloud_cov,
                                            'nocloud_m': nocloud_m, 'nocloud_cov': nocloud_cov})
 
     @staticmethod
     def print_stats(cloud_m, cloud_cov, nocloud_m, nocloud_cov):
-
+        """
+        displays mean values and variances of trained classifiers
+        """
         logging.debug('Training statistics:')
         logging.debug('Cloud class mean:\n%s' % str(cloud_m))
         logging.debug('Cloud class cov. mat.:\n%s' % str(cloud_cov))
@@ -85,11 +91,10 @@ class TrainRGBClassifier(TrainClassifier):
     """
     RGB color space
     """
-    def __init__(self, class_type, *args):
-        self.class_type = class_type
-        super(self.__class__, self).__init__(*args)
-
     def extract_features(self, filename):
+        """
+        feature vector for R, G, B
+        """
         HSI, RGB = rgb2hsi.HSI_matrix(os.path.join(self.data_dir, filename))
         R, G, B = RGB[:,:,0], RGB[:,:,1], RGB[:,:,2]
         self.features = [R, G, B]
@@ -99,22 +104,28 @@ class TrainHSIClassifier(TrainClassifier):
     """
     HSI color space
     """
-    def __init__(self, class_type, *args):
-        self.class_type = class_type
+    def __init__(self, eps, *args):
+        """
+        to compute features in space  I/H,S,I we need an additional
+        parameter epsilon, which can be set
+        """
+        self.eps = eps
         super(self.__class__, self).__init__(*args)
 
     def extract_features(self, filename):
+        """
+        feature vector for I/H, S, I
+        """
         HSI, RGB = rgb2hsi.HSI_matrix(os.path.join(self.data_dir, filename))
         H, S, I = HSI[:,:,0], HSI[:,:,1], HSI[:,:,2]
-        eps = 1.
-        self.features = [(I+eps)/(H+eps), S, I] #this has better component separability than HSL
+        self.features = [(I+self.eps)/(H+self.eps), S, I]  # this has better component separability than HSL
 
 
-if __name__ == '__main__':
+def main():
     """
-    specify which files use for classifier training
+    Specify which files use for classifier training
 
-      Data_dir must contain sattelite images with clouds and corresponding
+      Data_dir must contain satellite images with clouds and corresponding
       masks with the same filename and suffix _mask
 
       example: cloud1.png, cloud1_mask.png
@@ -128,4 +139,8 @@ if __name__ == '__main__':
     logging.debug('Found following files: %s' % str(files))
 
     TrainRGBClassifier('rgb', data_dir, files)
-    TrainHSIClassifier('hsi', data_dir, files)
+    TrainHSIClassifier(1., 'hsi', data_dir, files)
+
+
+if __name__ == '__main__':
+    main()
