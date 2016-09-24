@@ -1,3 +1,5 @@
+![Screen Shot 2016-09-24 at 21.56.18.jpg](https://bitbucket.org/repo/GKKr4n/images/1924183048-Screen%20Shot%202016-09-24%20at%2021.56.18.jpg)
+
 # Classification of clouds in RGB satellite images #
 
 ## 1. Introduction
@@ -53,3 +55,17 @@ Overview of the whole classification algorithm follows.
 
 For most operations we use `OpenCV` library. Whenever possible we try to implement operations in a matrix fashion in order to use all the power on `Numpy`. During the whole computation we preserve 8-bit per channel representation stored as `uint8` type. For plotting images we use `Matplotlib`. For storing data (e.g. precomputed image masks) we use Matlab format written and read by Scipy.io module. Complete list of software with versions is attached to the source code in file `requirements.txt`. All paths are relative so it should work without any configuration.
 
+
+## Results
+
+What follows are results on the included test set. All train and test images are courtesy of NASA or NOAA.
+
+![Screen Shot 2016-09-24 at 21.55.51.jpg](https://bitbucket.org/repo/GKKr4n/images/4291024540-Screen%20Shot%202016-09-24%20at%2021.55.51.jpg)
+
+![Screen Shot 2016-09-24 at 21.55.59.jpg](https://bitbucket.org/repo/GKKr4n/images/2651375779-Screen%20Shot%202016-09-24%20at%2021.55.59.jpg)
+
+![Screen Shot 2016-09-24 at 21.56.11.jpg](https://bitbucket.org/repo/GKKr4n/images/1471344961-Screen%20Shot%202016-09-24%20at%2021.56.11.jpg)
+
+![Screen Shot 2016-09-24 at 21.56.25.jpg](https://bitbucket.org/repo/GKKr4n/images/3262931301-Screen%20Shot%202016-09-24%20at%2021.56.25.jpg)
+
+![Screen Shot 2016-09-24 at 21.56.33.jpg](https://bitbucket.org/repo/GKKr4n/images/3307744108-Screen%20Shot%202016-09-24%20at%2021.56.33.jpg)
